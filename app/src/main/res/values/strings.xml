@@ -25,6 +25,11 @@
     <string name="no_recipes_match">Nothing you can cook with what you've got. Add a few more ingredients.</string>
     <string name="ingredients_heading">Ingredients</string>
     <string name="method_heading">Method</string>
+    <string name="settings">Settings</string>
+    <string name="expiry_alerts">Expiry alerts</string>
+    <string name="expiry_alerts_help">Turn this on to flag food that expires within 3 days.</string>
+    <string name="default_unit">Default unit</string>
+    <string name="default_unit_help">Used when you add a new ingredient.</string>
 
     <string-array name="units">
         <item>g</item>

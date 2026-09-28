@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
             startActivity(new Intent(this, SuggestionsActivity.class));
             return true;
         }
+        if (item.getItemId() == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
