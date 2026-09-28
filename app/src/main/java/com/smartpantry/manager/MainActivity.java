@@ -20,10 +20,6 @@ import com.smartpantry.manager.data.PantryItem;
 
 import java.util.List;
 
-/**
- * Pantry list. onCreate builds the screen once.
- * onResume reloads the rows every time the user comes back, including after adding or editing an item.
- */
 public class MainActivity extends AppCompatActivity implements PantryAdapter.Listener {
 
     private DatabaseHelper database;
@@ -52,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
     @Override
     protected void onResume() {
         super.onResume();
+        // come back here after add/edit, so reload the list
         loadPantry();
     }
 
@@ -96,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
 
     private void loadPantry() {
         List<PantryItem> items = database.getPantryItems();
-        adapter.submit(items);
+        adapter.setItems(items);
         emptyView.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
     }
 }

@@ -1,19 +1,12 @@
 package com.smartpantry.manager.data;
 
-/**
- * One ingredient the user currently has at home.
- * expiryDate is optional and stored as yyyy-MM-dd, or null when the user skips it.
- */
 public class PantryItem {
 
     private long id;
     private String name;
     private double quantity;
     private String unit;
-    private String expiryDate;
-
-    public PantryItem() {
-    }
+    private String expiryDate; // yyyy-MM-dd, or null if they didn't pick one
 
     public long getId() {
         return id;
@@ -60,8 +53,8 @@ public class PantryItem {
     }
 
     public static String formatQuantity(double quantity) {
-        if (Math.abs(quantity - Math.rint(quantity)) < 0.001d) {
-            return String.valueOf((long) Math.rint(quantity));
+        if (quantity == Math.floor(quantity)) {
+            return String.valueOf((long) quantity);
         }
         return String.valueOf(quantity);
     }

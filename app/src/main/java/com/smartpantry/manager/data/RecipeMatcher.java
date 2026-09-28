@@ -6,136 +6,115 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Decides which recipes the user can cook from the pantry they have right now.
- * A recipe is suggested only when every required ingredient is present in at least the required amount.
- */
-public final class RecipeMatcher {
+public class RecipeMatcher {
 
-    private RecipeMatcher() {
-    }
-
+    // A recipe only counts if every ingredient is in the pantry, with enough quantity.
+    // "tomato" and "tomatoes" are treated as the same thing, and kg is converted to g (same idea for ml / L).
     public static List<Recipe> strictMatches(List<Recipe> recipes, List<PantryItem> pantry) {
-        Map<String, Map<String, Double>> stock = indexPantry(pantry);
+        Map<String, Double> stock = new HashMap<>();
+
+        for (PantryItem item : pantry) {
+            String key = stockKey(item.getName(), item.getUnit());
+            if (key == null) {
+                continue;
+            }
+            double amount = toBaseAmount(item.getQuantity(), item.getUnit());
+            if (stock.containsKey(key)) {
+                stock.put(key, stock.get(key) + amount);
+            } else {
+                stock.put(key, amount);
+            }
+        }
+
         List<Recipe> matches = new ArrayList<>();
         for (Recipe recipe : recipes) {
             if (recipe.getIngredients().isEmpty()) {
                 continue;
             }
-            if (canMake(recipe, stock)) {
+            if (canCook(recipe, stock)) {
                 matches.add(recipe);
             }
         }
         return matches;
     }
 
-    private static boolean canMake(Recipe recipe, Map<String, Map<String, Double>> stock) {
+    private static boolean canCook(Recipe recipe, Map<String, Double> stock) {
         for (RecipeIngredient ingredient : recipe.getIngredients()) {
-            if (!hasEnough(stock, ingredient)) {
+            String key = stockKey(ingredient.getName(), ingredient.getUnit());
+            if (key == null || !stock.containsKey(key)) {
+                return false;
+            }
+            double need = toBaseAmount(ingredient.getQuantity(), ingredient.getUnit());
+            // small fudge so 100 and 100.0001 still count as enough
+            if (stock.get(key) + 0.001 < need) {
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean hasEnough(Map<String, Map<String, Double>> stock, RecipeIngredient ingredient) {
-        BaseAmount needed = toBase(ingredient.getQuantity(), ingredient.getUnit());
-        if (needed == null) {
-            return false;
+    // key is the cleaned name plus the unit group, so 500g and 0.5kg land in the same bucket
+    private static String stockKey(String name, String unit) {
+        String group = unitGroup(unit);
+        if (group == null) {
+            return null;
         }
-        Map<String, Double> byFamily = stock.get(normalizeName(ingredient.getName()));
-        if (byFamily == null) {
-            return false;
-        }
-        Double have = byFamily.get(needed.family);
-        return have != null && have + 0.0001d >= needed.amount;
+        return cleanName(name) + "|" + group;
     }
 
-    /**
-     * Adds up pantry rows that share a name and a unit family.
-     * "tomato" and "tomatoes" land on the same key. Grams and kilograms land in "mass".
-     */
-    private static Map<String, Map<String, Double>> indexPantry(List<PantryItem> pantry) {
-        Map<String, Map<String, Double>> stock = new HashMap<>();
-        for (PantryItem item : pantry) {
-            BaseAmount have = toBase(item.getQuantity(), item.getUnit());
-            if (have == null) {
-                continue;
-            }
-            String name = normalizeName(item.getName());
-            Map<String, Double> byFamily = stock.get(name);
-            if (byFamily == null) {
-                byFamily = new HashMap<>();
-                stock.put(name, byFamily);
-            }
-            Double current = byFamily.get(have.family);
-            byFamily.put(have.family, (current == null ? 0d : current) + have.amount);
+    static String cleanName(String raw) {
+        if (raw == null) {
+            return "";
         }
-        return stock;
-    }
+        String name = raw.trim().toLowerCase(Locale.US);
+        name = name.replaceAll("[^a-z ]", "");
+        name = name.replaceAll(" +", " ").trim();
 
-    static String normalizeName(String raw) {
-        String name = raw == null ? "" : raw.trim().toLowerCase(Locale.US);
-        name = name.replaceAll("[^a-z\\s]", "");
-        name = name.replaceAll("\\s+", " ").trim();
-        if (name.endsWith("oes")) {
-            name = name.substring(0, name.length() - 2);
-        } else if (name.endsWith("ies")) {
+        if (name.endsWith("ies") && name.length() > 3) {
             name = name.substring(0, name.length() - 3) + "y";
-        } else if (name.endsWith("s") && !name.endsWith("ss")) {
+        } else if (name.endsWith("oes") && name.length() > 3) {
+            // tomatoes -> tomato
+            name = name.substring(0, name.length() - 2);
+        } else if (name.endsWith("s") && !name.endsWith("ss") && name.length() > 1) {
             name = name.substring(0, name.length() - 1);
         }
         return name;
     }
 
-    static BaseAmount toBase(double quantity, String unit) {
+    private static String unitGroup(String unit) {
         if (unit == null) {
             return null;
         }
-        switch (unit.trim().toLowerCase(Locale.US)) {
-            case "g":
-            case "gram":
-            case "grams":
-                return new BaseAmount("mass", quantity);
-            case "kg":
-            case "kilogram":
-            case "kilograms":
-                return new BaseAmount("mass", quantity * 1000d);
-            case "ml":
-            case "millilitre":
-            case "milliliter":
-                return new BaseAmount("volume", quantity);
-            case "l":
-            case "litre":
-            case "liter":
-                return new BaseAmount("volume", quantity * 1000d);
-            case "tsp":
-            case "teaspoon":
-            case "teaspoons":
-                return new BaseAmount("volume", quantity * 5d);
-            case "tbsp":
-            case "tablespoon":
-            case "tablespoons":
-                return new BaseAmount("volume", quantity * 15d);
-            case "cup":
-            case "cups":
-                return new BaseAmount("volume", quantity * 250d);
-            case "item":
-            case "items":
-            case "whole":
-                return new BaseAmount("count", quantity);
-            default:
-                return null;
+        String u = unit.trim().toLowerCase(Locale.US);
+        if (u.equals("g") || u.equals("kg") || u.equals("gram") || u.equals("grams")) {
+            return "weight";
         }
+        if (u.equals("ml") || u.equals("l") || u.equals("tsp") || u.equals("tbsp") || u.equals("cup")) {
+            return "volume";
+        }
+        if (u.equals("item") || u.equals("items")) {
+            return "count";
+        }
+        return null;
     }
 
-    static final class BaseAmount {
-        final String family;
-        final double amount;
-
-        BaseAmount(String family, double amount) {
-            this.family = family;
-            this.amount = amount;
+    private static double toBaseAmount(double quantity, String unit) {
+        String u = unit.trim().toLowerCase(Locale.US);
+        if (u.equals("kg")) {
+            return quantity * 1000;
         }
+        if (u.equals("l")) {
+            return quantity * 1000;
+        }
+        if (u.equals("tsp")) {
+            return quantity * 5;
+        }
+        if (u.equals("tbsp")) {
+            return quantity * 15;
+        }
+        if (u.equals("cup")) {
+            return quantity * 250;
+        }
+        return quantity;
     }
 }

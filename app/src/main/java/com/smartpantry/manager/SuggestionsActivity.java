@@ -17,7 +17,6 @@ import com.smartpantry.manager.data.RecipeMatcher;
 
 import java.util.List;
 
-/** Lists only the recipes the current pantry can make in full. */
 public class SuggestionsActivity extends AppCompatActivity implements RecipeAdapter.Listener {
 
     private DatabaseHelper database;
@@ -48,7 +47,7 @@ public class SuggestionsActivity extends AppCompatActivity implements RecipeAdap
         List<PantryItem> pantry = database.getPantryItems();
         List<Recipe> recipes = database.getRecipes();
         List<Recipe> suggested = RecipeMatcher.strictMatches(recipes, pantry);
-        adapter.submit(suggested);
+        adapter.setItems(suggested);
         boolean empty = suggested.isEmpty();
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
         summaryView.setVisibility(empty ? View.GONE : View.VISIBLE);

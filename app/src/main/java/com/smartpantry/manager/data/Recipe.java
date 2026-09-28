@@ -3,13 +3,12 @@ package com.smartpantry.manager.data;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A seeded recipe: a name, the method, and every ingredient it requires. */
 public class Recipe {
 
     private long id;
     private String name;
     private String steps;
-    private final List<RecipeIngredient> ingredients = new ArrayList<>();
+    private List<RecipeIngredient> ingredients = new ArrayList<>();
 
     public long getId() {
         return id;

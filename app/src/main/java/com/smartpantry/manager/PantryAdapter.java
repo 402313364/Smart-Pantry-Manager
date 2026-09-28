@@ -14,7 +14,6 @@ import com.smartpantry.manager.data.PantryItem;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Binds pantry rows from the database into the list on the main screen. */
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
 
     public interface Listener {
@@ -30,7 +29,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
         this.listener = listener;
     }
 
-    public void submit(List<PantryItem> next) {
+    public void setItems(List<PantryItem> next) {
         items.clear();
         items.addAll(next);
         notifyDataSetChanged();

@@ -1,1 +1,1 @@
-# Keep the default ProGuard rules. Minify is off for this assignment build.
+# minify is off, so this file isn't really used yet

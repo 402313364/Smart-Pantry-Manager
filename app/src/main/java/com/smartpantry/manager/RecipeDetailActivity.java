@@ -10,7 +10,6 @@ import com.smartpantry.manager.data.DatabaseHelper;
 import com.smartpantry.manager.data.Recipe;
 import com.smartpantry.manager.data.RecipeIngredient;
 
-/** Shows one recipe. The recipe id arrives in the Intent that opened this screen. */
 public class RecipeDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_RECIPE_ID = "extra_recipe_id";

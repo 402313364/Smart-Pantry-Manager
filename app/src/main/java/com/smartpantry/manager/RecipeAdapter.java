@@ -13,7 +13,6 @@ import com.smartpantry.manager.data.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Shows recipe names returned by the strict-matching rule. */
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Holder> {
 
     public interface Listener {
@@ -27,7 +26,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Holder> {
         this.listener = listener;
     }
 
-    public void submit(List<Recipe> next) {
+    public void setItems(List<Recipe> next) {
         recipes.clear();
         recipes.addAll(next);
         notifyDataSetChanged();

@@ -1,6 +1,5 @@
 package com.smartpantry.manager.data;
 
-/** One line on a recipe: what is needed, and how much. */
 public class RecipeIngredient {
 
     private long id;

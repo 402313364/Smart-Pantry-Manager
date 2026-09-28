@@ -1,97 +1,35 @@
 # Smart Pantry Manager
 
-Smart Pantry Manager is a Java Android app that helps a person waste less food. It stores the ingredients they already have at home and suggests recipes they can cook from those leftovers. A recipe is shown only when every ingredient it needs is already in the pantry, in at least the required quantity. Nothing in the app depends on a shop, a map, or the user's location.
+Android app that keeps a list of food I already have and shows recipes I can actually cook from it.
 
-## Who it is for
+A recipe only shows up when every ingredient is in the pantry, and I have at least as much as the recipe needs. If one thing is missing, it stays off the list. "Tomato" and "tomatoes" count as the same ingredient, and units like g/kg or ml/L get converted before they're compared. Partial matches are not on this screen.
 
-The user is someone looking at leftovers in the kitchen and deciding what they can cook tonight without buying more food.
+Nothing in here uses a shop, a map, or location.
 
-## Planned screens
+## Screens so far
 
-The app will have five screens, moved between with Intents, and a bottom navigation bar:
+Moved between with Intents:
 
-1. **Pantry list** — every ingredient currently at home, shown in a RecyclerView.
-2. **Add / edit ingredient** — name, quantity, unit, and an optional expiry date, with input validation.
-3. **Suggested recipes** — only the recipes the user can make right now.
-4. **Recipe detail** — the full ingredient list and the preparation steps for one recipe.
-5. **Settings** — a toggle for expiring-soon alerts, and a preference for measurement units.
+1. Pantry list — RecyclerView of what's at home. Tap a row to edit it, or the bin icon to delete (it asks first).
+2. Add / edit ingredient — name, quantity, unit, optional expiry. It checks the name and that the quantity is more than 0.
+3. Suggested recipes — only the ones I can make right now. If none match, it says so instead of a blank list.
+4. Recipe detail — ingredients and the method. Opened with the recipe id on the Intent.
 
-If no recipe matches the pantry, the suggestions screen will say so instead of showing a blank list.
+Still to do: a settings screen (expiry alerts, and a unit preference) and a bottom nav bar. Those settings will go in SharedPreferences, not in the pantry table.
 
-## Strict-matching rule
+## Database
 
-This is the main piece of logic in the app.
+SQLite, through `SQLiteOpenHelper`, on the phone. File is `smart_pantry.db`.
 
-A recipe is suggested only when every required ingredient is in the pantry and the pantry quantity is at least the quantity the recipe asks for. If a recipe needs five ingredients and the pantry has four, that recipe stays off the suggestions list. Partial matches are not shown there.
+Pantry rows are my data (create, read, update, delete) and they stay after the app is closed. Recipes are inserted once, when the database is first created — 18 of them, with their ingredients in a second table.
 
-Matching will allow for simple differences such as `tomato` and `tomatoes`, and for common unit differences. It will not try to understand free-form sentences.
+I looked at Firebase and a server database and didn't use them. This is one person's pantry and it has to work with no account and no internet. No Google Maps or GPS either.
 
-An optional later extra is a separate "Almost there" list for recipes missing only one ingredient. That list, if it is built, will stay separate from the strict suggestions.
+## Run it
 
-## Planned data model
+Java, Android Studio. Min Android 8.0 (API 26), compile SDK 34. Java 11 in `app/build.gradle`.
 
-Two tables in a local SQLite database:
-
-**pantry_items**
-
-| Column | Purpose |
-| --- | --- |
-| id | Primary key |
-| name | Ingredient name |
-| quantity | How much the user has |
-| unit | g, ml, item, and similar units |
-| expiry_date | Optional date |
-
-**recipes** and **recipe_ingredients**
-
-| Stored fact | Purpose |
-| --- | --- |
-| Recipe name | What the dish is called |
-| Required ingredients | Name, quantity, and unit for each line |
-| Steps | Short preparation method |
-
-About 15 to 20 recipes will be inserted the first time the database is created. Pantry rows are the user's own data. The user must be able to create, read, update, and delete pantry items, and those rows must still be there after the app is closed and opened again.
-
-## Database choice
-
-The database will be **SQLite**, using `SQLiteOpenHelper`, stored on the device.
-
-SQLite fits this app because the pantry is personal data for one phone. It works with no account and no internet connection. It supports full create, read, update, and delete, and the rows remain after the process is killed. It is also the on-device storage approach covered in this module, so the report and the demonstration can explain one local database from the helper class through to the list on screen.
-
-Firebase and PostgreSQL were considered and set aside. This app does not need cloud sync or a separate server.
-
-The app will not use Google Maps, any mapping SDK, or GPS.
-
-## Technical plan
-
-- Java, in Android Studio. Kotlin is out of scope for this module.
-- Separate Activities for the screens above.
-- Intents to open a screen and to pass the selected recipe or pantry item.
-- A RecyclerView with a custom Adapter for the pantry list and the suggestions list.
-- `ConstraintLayout` for the forms and detail screens.
-- SharedPreferences for the two settings, because they are preferences rather than pantry records.
-- Minimum Android version: 8.0 (API 26). Compile SDK: 34.
-
-## Setup and run
-
-The Android project for this plan is in this folder.
-
-1. Install Android Studio with Android SDK 34.
-2. Open this folder in Android Studio. It is the folder that contains `settings.gradle`.
-3. Wait for Gradle sync. Android Studio creates `local.properties` for the SDK path. That file stays off Git.
-4. Run the `app` configuration on an emulator or a phone with Android 8.0 or higher.
-
-Java 11 source compatibility is set in `app/build.gradle`. Android Studio's bundled JDK is enough.
-
-## Build order
-
-1. Project setup and this plan.
-2. SQLite helper and the pantry table, with create, read, update, and delete.
-3. Seed the recipe tables on first launch.
-4. Pantry list screen and its adapter.
-5. Add and edit screen, with validation.
-6. Delete, with a confirmation.
-7. Suggested recipes and the strict-matching rule.
-8. Recipe detail screen.
-9. Settings screen.
-10. Bottom navigation, the empty-state message, and layout polish.
+1. Install Android Studio with SDK 34.
+2. Open the folder that has `settings.gradle`.
+3. Wait for Gradle sync. Android Studio writes `local.properties` for the SDK path — that file stays off git.
+4. Run `app` on an emulator or a phone on Android 8 or higher.

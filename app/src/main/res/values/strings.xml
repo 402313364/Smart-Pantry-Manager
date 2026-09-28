@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Smart Pantry Manager</string>
-    <string name="tagline">Cook from what you already have. A recipe is suggested only when every ingredient is already in your pantry.</string>
     <string name="pantry_title">My pantry</string>
-    <string name="empty_pantry">Your pantry is empty. Add an ingredient to get started.</string>
+    <string name="empty_pantry">Nothing in here yet. Tap + to add an ingredient.</string>
     <string name="add_ingredient">Add ingredient</string>
     <string name="edit_ingredient">Edit ingredient</string>
     <string name="ingredient_name">Ingredient name</string>
@@ -23,7 +22,7 @@
     <string name="error_quantity">Enter a quantity greater than zero.</string>
     <string name="error_expiry">That expiry date is not valid.</string>
     <string name="suggested_recipes">Suggested recipes</string>
-    <string name="no_recipes_match">No recipes match your pantry yet. Add more ingredients.</string>
+    <string name="no_recipes_match">Nothing you can cook with what you've got. Add a few more ingredients.</string>
     <string name="ingredients_heading">Ingredients</string>
     <string name="method_heading">Method</string>
 

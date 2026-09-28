@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** Add or edit one pantry item. The Intent extra is the row id, or -1 when creating a new row. */
+// pantry id comes in on the intent. -1 means a new item
 public class IngredientFormActivity extends AppCompatActivity {
 
     public static final String EXTRA_PANTRY_ID = "extra_pantry_id";
@@ -101,6 +101,7 @@ public class IngredientFormActivity extends AppCompatActivity {
                 .setTitleText(R.string.expiry_optional)
                 .build();
         picker.addOnPositiveButtonClickListener(selection -> {
+            // the picker returns utc millis, so don't use the phone's timezone or the day can shift
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             calendar.setTimeInMillis(selection);
             String iso = String.format(Locale.US, "%04d-%02d-%02d",
