@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pantry_green">#2F6B4F</color>
+    <color name="pantry_green_dark">#1E4634</color>
+    <color name="pantry_green_light">#E7F2EB</color>
+    <color name="pantry_cream">#F7F4EE</color>
+    <color name="pantry_ink">#1C1B19</color>
+    <color name="pantry_muted">#5C5852</color>
+    <color name="white">#FFFFFF</color>
+    <color name="pantry_danger">#8C2F2F</color>
+</resources>
