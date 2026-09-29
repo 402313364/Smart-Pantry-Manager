@@ -1,63 +1,149 @@
 package com.smartpantry.manager.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class RecipeMatcher {
 
     // strict matching: every ingredient must be in the pantry, enough quantity
     public static List<Recipe> strictMatches(List<Recipe> recipes, List<PantryItem> pantry) {
-        Map<String, Double> stock = new HashMap<>();
-
-        for (PantryItem item : pantry) {
-            String key = stockKey(item.getName(), item.getUnit());
-            if (key == null) {
-                continue;
-            }
-            double amount = toBaseAmount(item.getQuantity(), item.getUnit());
-            if (stock.containsKey(key)) {
-                stock.put(key, stock.get(key) + amount);
-            } else {
-                stock.put(key, amount);
-            }
-        }
-
         List<Recipe> matches = new ArrayList<>();
         for (Recipe recipe : recipes) {
             if (recipe.getIngredients().isEmpty()) {
                 continue;
             }
-            if (canCook(recipe, stock)) {
+            if (canCook(recipe, pantry)) {
                 matches.add(recipe);
             }
         }
         return matches;
     }
 
-    private static boolean canCook(Recipe recipe, Map<String, Double> stock) {
+    public static List<String> haveNames(Recipe recipe, List<PantryItem> pantry) {
+        List<String> names = new ArrayList<>();
         for (RecipeIngredient ingredient : recipe.getIngredients()) {
-            String key = stockKey(ingredient.getName(), ingredient.getUnit());
-            if (key == null || !stock.containsKey(key)) {
-                return false;
+            if (hasEnough(ingredient, pantry)) {
+                names.add(ingredient.getName());
             }
-            double need = toBaseAmount(ingredient.getQuantity(), ingredient.getUnit());
-            if (stock.get(key) + 0.001 < need) { // float rounding
+        }
+        return names;
+    }
+
+    public static List<String> needNames(Recipe recipe, List<PantryItem> pantry) {
+        List<String> names = new ArrayList<>();
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            if (!hasEnough(ingredient, pantry)) {
+                names.add(needLabel(ingredient, pantry));
+            }
+        }
+        return names;
+    }
+
+    // bonus: missing only 1 ingredient - not shown in the strict list
+    public static List<Recipe> almostThere(List<Recipe> recipes, List<PantryItem> pantry) {
+        List<Recipe> almost = new ArrayList<>();
+        for (Recipe recipe : recipes) {
+            if (recipe.getIngredients().isEmpty()) {
+                continue;
+            }
+            if (canCook(recipe, pantry)) {
+                continue;
+            }
+            if (missingCount(recipe, pantry) == 1) {
+                almost.add(recipe);
+            }
+        }
+        return almost;
+    }
+
+    private static int missingCount(Recipe recipe, List<PantryItem> pantry) {
+        int missing = 0;
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            if (!hasEnough(ingredient, pantry)) {
+                missing++;
+            }
+        }
+        return missing;
+    }
+
+    public static String joinNames(List<String> names) {
+        if (names == null || names.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < names.size(); i++) {
+            if (i > 0) {
+                builder.append(", ");
+            }
+            builder.append(names.get(i));
+        }
+        return builder.toString();
+    }
+
+    private static boolean canCook(Recipe recipe, List<PantryItem> pantry) {
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            if (!hasEnough(ingredient, pantry)) {
                 return false;
             }
         }
         return true;
     }
 
-    // same name + same unit type (so 500g and 0.5kg match)
-    private static String stockKey(String name, String unit) {
-        String group = unitGroup(unit);
-        if (group == null) {
-            return null;
+    // same ingredient name counts even if the unit is different (g vs item vs ml)
+    // if the units convert (g/kg, ml/L) we still check there is enough
+    private static boolean hasEnough(RecipeIngredient ingredient, List<PantryItem> pantry) {
+        String want = cleanName(ingredient.getName());
+        if (want.isEmpty()) {
+            return false;
         }
-        return cleanName(name) + "|" + group;
+        double haveSameUnit = 0;
+        double haveAny = 0;
+        boolean foundName = false;
+        String recipeGroup = unitGroup(ingredient.getUnit());
+
+        for (PantryItem item : pantry) {
+            if (!want.equals(cleanName(item.getName()))) {
+                continue;
+            }
+            foundName = true;
+            haveAny += item.getQuantity();
+            String itemGroup = unitGroup(item.getUnit());
+            if (recipeGroup != null && recipeGroup.equals(itemGroup)) {
+                haveSameUnit += toBaseAmount(item.getQuantity(), item.getUnit());
+            }
+        }
+
+        if (!foundName) {
+            return false;
+        }
+
+        double need = toBaseAmount(ingredient.getQuantity(), ingredient.getUnit());
+        if (haveSameUnit + 0.001 >= need) {
+            return true;
+        }
+        // leftover in g but recipe says item / ml - still count it if the amount is enough
+        return haveAny + 0.001 >= ingredient.getQuantity();
+    }
+
+    private static String needLabel(RecipeIngredient ingredient, List<PantryItem> pantry) {
+        String onHand = onHandText(ingredient.getName(), pantry);
+        if (onHand == null) {
+            return ingredient.getName() + " (none in pantry)";
+        }
+        return ingredient.getName() + " (need "
+                + PantryItem.formatQuantity(ingredient.getQuantity()) + " "
+                + ingredient.getUnit() + ", you have " + onHand + ")";
+    }
+
+    private static String onHandText(String name, List<PantryItem> pantry) {
+        String want = cleanName(name);
+        for (PantryItem item : pantry) {
+            if (want.equals(cleanName(item.getName()))) {
+                return PantryItem.formatQuantity(item.getQuantity()) + " " + item.getUnit();
+            }
+        }
+        return null;
     }
 
     static String cleanName(String raw) {

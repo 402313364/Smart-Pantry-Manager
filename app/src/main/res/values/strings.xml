@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Smart Pantry Manager</string>
     <string name="pantry_title">My pantry</string>
-    <string name="empty_pantry">Nothing in here yet. Tap + to add an ingredient.</string>
+    <string name="empty_pantry">Nothing in here yet. Tap plus to add an ingredient.</string>
     <string name="add_ingredient">Add ingredient</string>
     <string name="edit_ingredient">Edit ingredient</string>
     <string name="ingredient_name">Ingredient name</string>
@@ -21,8 +21,16 @@
     <string name="error_name">Enter an ingredient name.</string>
     <string name="error_quantity">Enter a quantity greater than zero.</string>
     <string name="error_expiry">That expiry date is not valid.</string>
-    <string name="suggested_recipes">Suggested recipes</string>
-    <string name="no_recipes_match">Nothing you can cook with what you've got. Add a few more ingredients.</string>
+    <string name="suggested_recipes">Recipes</string>
+    <string name="no_recipes_match">No recipes match your pantry yet. Amounts matter - if a recipe needs 200 g and you have 10 g, it stays off this list.</string>
+    <string name="can_cook_heading">You can cook now</string>
+    <string name="all_recipes_heading">All recipes</string>
+    <string name="all_recipes_help">Have = already in your pantry. Need = missing, or not enough. Tap a recipe for the method.</string>
+    <string name="almost_there_heading">Almost there</string>
+    <string name="almost_there_help">Missing only 1 ingredient. This is not the main suggestions list.</string>
+    <string name="you_can_cook_this">You can cook this</string>
+    <string name="have_label">Have: %1$s</string>
+    <string name="need_label">Need: %1$s</string>
     <string name="ingredients_heading">Ingredients</string>
     <string name="method_heading">Method</string>
     <string name="settings">Settings</string>

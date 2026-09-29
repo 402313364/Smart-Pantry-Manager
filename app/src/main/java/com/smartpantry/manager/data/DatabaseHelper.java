@@ -13,7 +13,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "smart_pantry.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public static final String TABLE_PANTRY = "pantry_items";
     public static final String TABLE_RECIPES = "recipes";
@@ -60,7 +60,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // db version is still 1 so nothing to migrate
+        // keep the pantry, reload recipes so matching uses the latest ingredients
+        db.execSQL("DELETE FROM " + TABLE_INGREDIENTS);
+        db.execSQL("DELETE FROM " + TABLE_RECIPES);
+        seedRecipes(db);
     }
 
     // Create
@@ -309,7 +312,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         id = insertRecipe(db, "Bean salad",
                 "Rinse the beans. Toss them with chopped onion, lemon juice, and oil.");
-        addIngredient(db, id, "beans", 200, "g");
+        addIngredient(db, id, "beans", 10, "g");
         addIngredient(db, id, "onion", 1, "item");
         addIngredient(db, id, "lemon", 1, "item");
         addIngredient(db, id, "oil", 10, "ml");

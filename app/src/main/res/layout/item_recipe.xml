@@ -23,12 +23,33 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textRecipeDetail"
+            android:id="@+id/textReady"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@color/pantry_muted"
-            android:textSize="14sp" />
+            android:text="@string/you_can_cook_this"
+            android:textColor="@color/pantry_green_dark"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/textHave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/pantry_green_dark"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/textNeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/pantry_danger"
+            android:textSize="14sp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

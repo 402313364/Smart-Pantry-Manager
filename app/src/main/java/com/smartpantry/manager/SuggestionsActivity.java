@@ -20,9 +20,13 @@ import java.util.List;
 public class SuggestionsActivity extends AppCompatActivity implements RecipeAdapter.Listener {
 
     private DatabaseHelper database;
-    private RecipeAdapter adapter;
+    private RecipeAdapter readyAdapter;
+    private RecipeAdapter almostAdapter;
+    private RecipeAdapter allAdapter;
     private TextView emptyView;
     private TextView summaryView;
+    private RecyclerView readyList;
+    private View almostSection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +39,22 @@ public class SuggestionsActivity extends AppCompatActivity implements RecipeAdap
 
         emptyView = findViewById(R.id.textEmpty);
         summaryView = findViewById(R.id.textSummary);
-        RecyclerView list = findViewById(R.id.recipeList);
-        list.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new RecipeAdapter(this);
-        list.setAdapter(adapter);
+        readyList = findViewById(R.id.readyList);
+
+        readyAdapter = new RecipeAdapter(this);
+        readyList.setLayoutManager(new LinearLayoutManager(this));
+        readyList.setAdapter(readyAdapter);
+
+        almostSection = findViewById(R.id.almostSection);
+        RecyclerView almostList = findViewById(R.id.almostList);
+        almostAdapter = new RecipeAdapter(this);
+        almostList.setLayoutManager(new LinearLayoutManager(this));
+        almostList.setAdapter(almostAdapter);
+
+        RecyclerView allList = findViewById(R.id.allList);
+        allAdapter = new RecipeAdapter(this);
+        allList.setLayoutManager(new LinearLayoutManager(this));
+        allList.setAdapter(allAdapter);
     }
 
     // check the pantry again whenever this screen is shown
@@ -47,11 +63,19 @@ public class SuggestionsActivity extends AppCompatActivity implements RecipeAdap
         super.onResume();
         List<PantryItem> pantry = database.getPantryItems();
         List<Recipe> recipes = database.getRecipes();
+        // top list is strict matching only
         List<Recipe> suggested = RecipeMatcher.strictMatches(recipes, pantry);
-        adapter.setItems(suggested);
+        List<Recipe> almost = RecipeMatcher.almostThere(recipes, pantry);
+
+        readyAdapter.setItems(suggested, pantry);
+        almostAdapter.setItems(almost, pantry);
+        allAdapter.setItems(recipes, pantry);
+
         boolean empty = suggested.isEmpty();
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
+        readyList.setVisibility(empty ? View.GONE : View.VISIBLE);
         summaryView.setVisibility(empty ? View.GONE : View.VISIBLE);
+        almostSection.setVisibility(almost.isEmpty() ? View.GONE : View.VISIBLE);
         if (!empty) {
             summaryView.setText(getResources().getQuantityString(
                     R.plurals.recipe_match_count, suggested.size(), suggested.size()));
