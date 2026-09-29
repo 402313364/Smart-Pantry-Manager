@@ -13,6 +13,7 @@ import com.smartpantry.manager.data.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
+// adapter for the suggested recipes list
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Holder> {
 
     public interface Listener {

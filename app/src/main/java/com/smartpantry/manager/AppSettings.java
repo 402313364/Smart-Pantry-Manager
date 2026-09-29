@@ -3,7 +3,7 @@ package com.smartpantry.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-// settings live in SharedPreferences, not in the pantry table
+// settings are saved in SharedPreferences, not in SQLite
 public class AppSettings {
 
     private static final String FILE = "pantry_settings";

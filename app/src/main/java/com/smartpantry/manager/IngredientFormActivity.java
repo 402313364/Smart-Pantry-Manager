@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-// pantry id comes in on the intent. -1 means a new item
 public class IngredientFormActivity extends AppCompatActivity {
 
     public static final String EXTRA_PANTRY_ID = "extra_pantry_id";
@@ -44,6 +43,7 @@ public class IngredientFormActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ingredient);
 
         database = DatabaseHelper.getInstance(this);
+        // id is sent from MainActivity on the Intent
         pantryId = getIntent().getLongExtra(EXTRA_PANTRY_ID, -1);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
@@ -75,7 +75,7 @@ public class IngredientFormActivity extends AppCompatActivity {
             loadExisting();
         } else {
             setExpiry(null);
-            // new items start on the unit saved in Settings
+            // new item - start on the default unit from settings
             setSpinnerValue(new AppSettings(this).getDefaultUnit());
         }
     }
@@ -103,7 +103,7 @@ public class IngredientFormActivity extends AppCompatActivity {
                 .setTitleText(R.string.expiry_optional)
                 .build();
         picker.addOnPositiveButtonClickListener(selection -> {
-            // the picker returns utc millis, so don't use the phone's timezone or the day can shift
+            // picker gives UTC, if I use local time the date can jump by a day
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             calendar.setTimeInMillis(selection);
             String iso = String.format(Locale.US, "%04d-%02d-%02d",
@@ -162,6 +162,7 @@ public class IngredientFormActivity extends AppCompatActivity {
         item.setUnit(unitSpinner.getSelectedItem().toString());
         item.setExpiryDate(expiryIso);
 
+        // insert if new, update if we already have an id
         if (pantryId < 0) {
             database.insertItem(item);
         } else {

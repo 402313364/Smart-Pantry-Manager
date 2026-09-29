@@ -48,7 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
         unitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // spinner fires once as soon as the adapter is attached
+                // this listener also runs when the spinner is first set up, skip that one
                 if (!spinnerReady) {
                     spinnerReady = true;
                     return;

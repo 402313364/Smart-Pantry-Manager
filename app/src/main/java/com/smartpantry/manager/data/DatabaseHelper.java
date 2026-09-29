@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+// local SQLite database on the phone
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "smart_pantry.db";
@@ -31,6 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
+    // first time the app runs - create the tables
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_PANTRY + " ("
@@ -53,25 +55,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "unit TEXT NOT NULL, "
                 + "FOREIGN KEY(recipe_id) REFERENCES " + TABLE_RECIPES + "(id))");
 
-        // first time the file is created, drop in the starter recipes
-        seedRecipes(db);
+        seedRecipes(db); // 18 recipes so matching has data straight away
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // still on version 1
+        // db version is still 1 so nothing to migrate
     }
 
+    // Create
     public long insertItem(PantryItem item) {
         SQLiteDatabase db = getWritableDatabase();
         return db.insert(TABLE_PANTRY, null, toValues(item));
     }
 
+    // Update
     public int updateItem(PantryItem item) {
         SQLiteDatabase db = getWritableDatabase();
         return db.update(TABLE_PANTRY, toValues(item), "id = ?", new String[]{String.valueOf(item.getId())});
     }
 
+    // Delete
     public int deleteItem(long id) {
         SQLiteDatabase db = getWritableDatabase();
         return db.delete(TABLE_PANTRY, "id = ?", new String[]{String.valueOf(id)});
@@ -90,6 +94,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Read - all pantry items, sorted by name
     public List<PantryItem> getPantryItems() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_PANTRY, null, null, null, null, null, "name COLLATE NOCASE ASC");

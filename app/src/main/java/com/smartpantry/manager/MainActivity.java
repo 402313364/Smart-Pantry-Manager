@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
     private PantryAdapter adapter;
     private TextView emptyView;
 
+    // onCreate only runs once when the screen is created
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,10 +46,10 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
         addButton.setOnClickListener(v -> openForm(-1));
     }
 
+    // onResume runs every time we come back to this screen (e.g. after add/edit)
     @Override
     protected void onResume() {
         super.onResume();
-        // come back here after add/edit, so reload the list
         loadPantry();
     }
 
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
                 .show();
     }
 
+    // pass the pantry id to the form. -1 means we are adding a new item
     private void openForm(long pantryId) {
         Intent intent = new Intent(this, IngredientFormActivity.class);
         intent.putExtra(IngredientFormActivity.EXTRA_PANTRY_ID, pantryId);

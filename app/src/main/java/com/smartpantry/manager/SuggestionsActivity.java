@@ -41,6 +41,7 @@ public class SuggestionsActivity extends AppCompatActivity implements RecipeAdap
         list.setAdapter(adapter);
     }
 
+    // check the pantry again whenever this screen is shown
     @Override
     protected void onResume() {
         super.onResume();
@@ -59,6 +60,7 @@ public class SuggestionsActivity extends AppCompatActivity implements RecipeAdap
 
     @Override
     public void onOpen(Recipe recipe) {
+        // pass the recipe id to the detail screen
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_ID, recipe.getId());
         startActivity(intent);

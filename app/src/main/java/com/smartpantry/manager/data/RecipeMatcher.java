@@ -8,8 +8,7 @@ import java.util.Map;
 
 public class RecipeMatcher {
 
-    // A recipe only counts if every ingredient is in the pantry, with enough quantity.
-    // "tomato" and "tomatoes" are treated as the same thing, and kg is converted to g (same idea for ml / L).
+    // strict matching: every ingredient must be in the pantry, enough quantity
     public static List<Recipe> strictMatches(List<Recipe> recipes, List<PantryItem> pantry) {
         Map<String, Double> stock = new HashMap<>();
 
@@ -45,15 +44,14 @@ public class RecipeMatcher {
                 return false;
             }
             double need = toBaseAmount(ingredient.getQuantity(), ingredient.getUnit());
-            // small fudge so 100 and 100.0001 still count as enough
-            if (stock.get(key) + 0.001 < need) {
+            if (stock.get(key) + 0.001 < need) { // float rounding
                 return false;
             }
         }
         return true;
     }
 
-    // key is the cleaned name plus the unit group, so 500g and 0.5kg land in the same bucket
+    // same name + same unit type (so 500g and 0.5kg match)
     private static String stockKey(String name, String unit) {
         String group = unitGroup(unit);
         if (group == null) {
@@ -70,10 +68,10 @@ public class RecipeMatcher {
         name = name.replaceAll("[^a-z ]", "");
         name = name.replaceAll(" +", " ").trim();
 
+        // tomatoes -> tomato, berries -> berry, eggs -> egg
         if (name.endsWith("ies") && name.length() > 3) {
             name = name.substring(0, name.length() - 3) + "y";
         } else if (name.endsWith("oes") && name.length() > 3) {
-            // tomatoes -> tomato
             name = name.substring(0, name.length() - 2);
         } else if (name.endsWith("s") && !name.endsWith("ss") && name.length() > 1) {
             name = name.substring(0, name.length() - 1);

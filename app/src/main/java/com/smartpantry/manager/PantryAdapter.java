@@ -14,6 +14,7 @@ import com.smartpantry.manager.data.PantryItem;
 import java.util.ArrayList;
 import java.util.List;
 
+// custom adapter - binds pantry rows from the database to the RecyclerView
 public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
 
     public interface Listener {
@@ -44,7 +45,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        PantryItem item = items.get(position);
+        PantryItem item = items.get(position); // one row from the list
         holder.name.setText(item.getName());
         holder.quantity.setText(item.getQuantityLabel());
         if (item.getExpiryDate() == null || item.getExpiryDate().isEmpty()) {

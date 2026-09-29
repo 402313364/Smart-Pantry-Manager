@@ -6,7 +6,7 @@ public class PantryItem {
     private String name;
     private double quantity;
     private String unit;
-    private String expiryDate; // yyyy-MM-dd, or null if they didn't pick one
+    private String expiryDate; // yyyy-MM-dd or null
 
     public long getId() {
         return id;

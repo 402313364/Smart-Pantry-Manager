@@ -22,6 +22,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
+        // recipe id comes from SuggestionsActivity
         long recipeId = getIntent().getLongExtra(EXTRA_RECIPE_ID, -1);
         Recipe recipe = DatabaseHelper.getInstance(this).getRecipe(recipeId);
         if (recipe == null) {
