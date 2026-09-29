@@ -75,6 +75,8 @@ public class IngredientFormActivity extends AppCompatActivity {
             loadExisting();
         } else {
             setExpiry(null);
+            // new items start on the unit saved in Settings
+            setSpinnerValue(new AppSettings(this).getDefaultUnit());
         }
     }
 
