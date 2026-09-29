@@ -4,9 +4,9 @@
     <item
         android:id="@+id/action_suggestions"
         android:title="@string/suggested_recipes"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_settings"
         android:title="@string/settings"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 </menu>
