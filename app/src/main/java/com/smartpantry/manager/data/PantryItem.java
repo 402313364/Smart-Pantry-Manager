@@ -1,5 +1,11 @@
 package com.smartpantry.manager.data;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 public class PantryItem {
 
     private long id;
@@ -46,6 +52,29 @@ public class PantryItem {
 
     public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
+    }
+
+    // true if the date is already past, or it falls in the next `days` days
+    public boolean expiresWithinDays(int days) {
+        if (expiryDate == null || expiryDate.isEmpty()) {
+            return false;
+        }
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            format.setLenient(false);
+            Date expiry = format.parse(expiryDate);
+            if (expiry == null) {
+                return false;
+            }
+            Calendar limit = Calendar.getInstance();
+            limit.set(Calendar.HOUR_OF_DAY, 23);
+            limit.set(Calendar.MINUTE, 59);
+            limit.set(Calendar.SECOND, 59);
+            limit.add(Calendar.DAY_OF_MONTH, days);
+            return !expiry.after(limit.getTime());
+        } catch (ParseException ex) {
+            return false;
+        }
     }
 
     public String getQuantityLabel() {

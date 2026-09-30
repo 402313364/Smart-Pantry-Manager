@@ -7,8 +7,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.smartpantry.manager.data.PantryItem;
 
 import java.util.ArrayList;
@@ -25,12 +27,14 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
 
     private final List<PantryItem> items = new ArrayList<>();
     private final Listener listener;
+    private boolean alertsEnabled;
 
     public PantryAdapter(Listener listener) {
         this.listener = listener;
     }
 
-    public void setItems(List<PantryItem> next) {
+    public void setItems(List<PantryItem> next, boolean alertsEnabled) {
+        this.alertsEnabled = alertsEnabled;
         items.clear();
         items.addAll(next);
         notifyDataSetChanged();
@@ -48,11 +52,21 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
         PantryItem item = items.get(position); // one row from the list
         holder.name.setText(item.getName());
         holder.quantity.setText(item.getQuantityLabel());
+
+        boolean flag = alertsEnabled && item.expiresWithinDays(3);
+        holder.card.setCardBackgroundColor(ContextCompat.getColor(
+                holder.itemView.getContext(),
+                flag ? R.color.pantry_alert : R.color.white));
+
         if (item.getExpiryDate() == null || item.getExpiryDate().isEmpty()) {
             holder.expiry.setVisibility(View.GONE);
         } else {
             holder.expiry.setVisibility(View.VISIBLE);
-            holder.expiry.setText(holder.itemView.getContext().getString(R.string.expiry_label, item.getExpiryDate()));
+            int label = flag ? R.string.expiry_soon_label : R.string.expiry_label;
+            holder.expiry.setText(holder.itemView.getContext().getString(label, item.getExpiryDate()));
+            holder.expiry.setTextColor(ContextCompat.getColor(
+                    holder.itemView.getContext(),
+                    flag ? R.color.pantry_danger : R.color.pantry_muted));
         }
         holder.itemView.setOnClickListener(v -> listener.onEdit(item));
         holder.delete.setOnClickListener(v -> listener.onDelete(item));
@@ -64,6 +78,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
     }
 
     static class Holder extends RecyclerView.ViewHolder {
+        final MaterialCardView card;
         final TextView name;
         final TextView quantity;
         final TextView expiry;
@@ -71,6 +86,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.Holder> {
 
         Holder(@NonNull View itemView) {
             super(itemView);
+            card = (MaterialCardView) itemView;
             name = itemView.findViewById(R.id.textName);
             quantity = itemView.findViewById(R.id.textQuantity);
             expiry = itemView.findViewById(R.id.textExpiry);

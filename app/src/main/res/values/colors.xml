@@ -8,4 +8,5 @@
     <color name="pantry_muted">#5C5852</color>
     <color name="white">#FFFFFF</color>
     <color name="pantry_danger">#8C2F2F</color>
+    <color name="pantry_alert">#F8E4E0</color>
 </resources>

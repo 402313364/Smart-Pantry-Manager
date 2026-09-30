@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
 
     private void loadPantry() {
         List<PantryItem> items = database.getPantryItems();
-        adapter.setItems(items);
+        boolean alertsOn = new AppSettings(this).expiryAlertsEnabled();
+        adapter.setItems(items, alertsOn);
         emptyView.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
     }
 }

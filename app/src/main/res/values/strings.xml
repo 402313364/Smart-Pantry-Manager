@@ -13,6 +13,7 @@
     <string name="clear_date">Clear</string>
     <string name="no_expiry">No expiry date</string>
     <string name="expiry_label">Expiry %1$s</string>
+    <string name="expiry_soon_label">Use soon: %1$s</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>

@@ -12,7 +12,7 @@ Nothing in here uses a shop, a map, or location.
 
 Moved between with Intents. The pantry toolbar has Recipes and Settings.
 
-1. Pantry list — RecyclerView of what's at home. Tap a row to edit it, or the bin icon to delete (it asks first).
+1. Pantry list — RecyclerView of what's at home. Tap a row to edit it, or the bin icon to delete (it asks first). If expiry alerts are on in Settings, items that expire within 3 days (or already expired) are highlighted.
 2. Add / edit ingredient — name, quantity, unit, optional expiry. It checks the name and that the quantity is more than 0. New items start on the default unit from Settings.
 3. Suggested recipes — recipes I can make right now, Almost there (one ingredient short), and all recipes with Have / Need.
 4. Recipe detail — ingredients and the method. Opened with the recipe id on the Intent. If I can cook it, Cook this subtracts the amounts from the pantry.
