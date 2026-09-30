@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.Lis
         database = DatabaseHelper.getInstance(this);
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.pantry_title);
+        }
 
         emptyView = findViewById(R.id.textEmpty);
         RecyclerView list = findViewById(R.id.pantryList);

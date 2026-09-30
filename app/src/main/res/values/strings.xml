@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Smart Pantry Manager</string>
-    <string name="pantry_title">My pantry</string>
+    <string name="pantry_title">Current items in pantry</string>
     <string name="empty_pantry">Nothing in here yet. Tap plus to add an ingredient.</string>
     <string name="add_ingredient">Add ingredient</string>
     <string name="edit_ingredient">Edit ingredient</string>
