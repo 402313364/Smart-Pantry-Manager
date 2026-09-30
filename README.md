@@ -2,20 +2,21 @@
 
 Android app that keeps a list of food I already have and shows recipes I can actually cook from it.
 
-A recipe only shows up when every ingredient is in the pantry, and I have at least as much as the recipe needs. If one thing is missing, it stays off the list. "Tomato" and "tomatoes" count as the same ingredient, and units like g/kg or ml/L get converted before they're compared. Partial matches are not on this screen.
+A recipe only counts as "you can cook now" when every ingredient is in the pantry, and I have at least as much as the recipe needs. If one thing is missing, it stays off that list. "Tomato" and "tomatoes" count as the same ingredient, and units like g/kg or ml/L get converted before they're compared.
+
+Recipes that are missing exactly one ingredient show under Almost there. That is separate from the strict list.
 
 Nothing in here uses a shop, a map, or location.
 
-## Screens so far
+## Screens
 
-Moved between with Intents:
+Moved between with Intents. The pantry toolbar has Recipes and Settings.
 
 1. Pantry list — RecyclerView of what's at home. Tap a row to edit it, or the bin icon to delete (it asks first).
-2. Add / edit ingredient — name, quantity, unit, optional expiry. It checks the name and that the quantity is more than 0.
-3. Suggested recipes — only the ones I can make right now. If none match, it says so instead of a blank list.
+2. Add / edit ingredient — name, quantity, unit, optional expiry. It checks the name and that the quantity is more than 0. New items start on the default unit from Settings.
+3. Suggested recipes — recipes I can make right now, Almost there (one ingredient short), and all recipes with Have / Need.
 4. Recipe detail — ingredients and the method. Opened with the recipe id on the Intent.
-
-Still to do: a settings screen (expiry alerts, and a unit preference) and a bottom nav bar. Those settings will go in SharedPreferences, not in the pantry table.
+5. Settings — expiry alerts toggle and default unit, saved in SharedPreferences (not in the pantry table).
 
 ## Database
 
