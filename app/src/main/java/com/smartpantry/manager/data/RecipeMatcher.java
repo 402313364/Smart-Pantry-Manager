@@ -81,13 +81,63 @@ public class RecipeMatcher {
         return builder.toString();
     }
 
-    private static boolean canCook(Recipe recipe, List<PantryItem> pantry) {
+    public static boolean canCook(Recipe recipe, List<PantryItem> pantry) {
         for (RecipeIngredient ingredient : recipe.getIngredients()) {
             if (!hasEnough(ingredient, pantry)) {
                 return false;
             }
         }
         return true;
+    }
+
+    // take the recipe amounts off the pantry list - caller writes the rows back to SQLite
+    public static boolean useIngredients(Recipe recipe, List<PantryItem> pantry) {
+        if (!canCook(recipe, pantry)) {
+            return false;
+        }
+        for (RecipeIngredient ingredient : recipe.getIngredients()) {
+            deduct(ingredient, pantry);
+        }
+        return true;
+    }
+
+    private static void deduct(RecipeIngredient ingredient, List<PantryItem> pantry) {
+        String want = cleanName(ingredient.getName());
+        String group = unitGroup(ingredient.getUnit());
+        double stillNeed = toBaseAmount(ingredient.getQuantity(), ingredient.getUnit());
+        boolean usedSameGroup = false;
+
+        for (PantryItem item : pantry) {
+            if (stillNeed <= 0.001) {
+                break;
+            }
+            if (!want.equals(cleanName(item.getName()))) {
+                continue;
+            }
+            String itemGroup = unitGroup(item.getUnit());
+            if (group != null && group.equals(itemGroup)) {
+                usedSameGroup = true;
+                double have = toBaseAmount(item.getQuantity(), item.getUnit());
+                double take = Math.min(have, stillNeed);
+                item.setQuantity(fromBaseAmount(have - take, item.getUnit()));
+                stillNeed -= take;
+            }
+        }
+
+        if (stillNeed > 0.001 && !usedSameGroup) {
+            double stillRaw = ingredient.getQuantity();
+            for (PantryItem item : pantry) {
+                if (stillRaw <= 0.001) {
+                    break;
+                }
+                if (!want.equals(cleanName(item.getName()))) {
+                    continue;
+                }
+                double take = Math.min(item.getQuantity(), stillRaw);
+                item.setQuantity(item.getQuantity() - take);
+                stillRaw -= take;
+            }
+        }
     }
 
     // same ingredient name counts even if the unit is different (g vs item vs ml)
@@ -200,5 +250,25 @@ public class RecipeMatcher {
             return quantity * 250;
         }
         return quantity;
+    }
+
+    private static double fromBaseAmount(double base, String unit) {
+        String u = unit.trim().toLowerCase(Locale.US);
+        if (u.equals("kg")) {
+            return base / 1000.0;
+        }
+        if (u.equals("l")) {
+            return base / 1000.0;
+        }
+        if (u.equals("tsp")) {
+            return base / 5.0;
+        }
+        if (u.equals("tbsp")) {
+            return base / 15.0;
+        }
+        if (u.equals("cup")) {
+            return base / 250.0;
+        }
+        return base;
     }
 }

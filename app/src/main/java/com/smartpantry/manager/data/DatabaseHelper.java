@@ -84,6 +84,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.delete(TABLE_PANTRY, "id = ?", new String[]{String.valueOf(id)});
     }
 
+    // Cook this recipe: subtract used amounts, delete a row if nothing is left
+    public boolean cookRecipe(Recipe recipe) {
+        List<PantryItem> pantry = getPantryItems();
+        if (!RecipeMatcher.useIngredients(recipe, pantry)) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (PantryItem item : pantry) {
+                if (item.getQuantity() <= 0.001) {
+                    db.delete(TABLE_PANTRY, "id = ?", new String[]{String.valueOf(item.getId())});
+                } else {
+                    db.update(TABLE_PANTRY, toValues(item), "id = ?", new String[]{String.valueOf(item.getId())});
+                }
+            }
+            db.setTransactionSuccessful();
+            return true;
+        } finally {
+            db.endTransaction();
+        }
+    }
+
     public PantryItem getPantryItem(long id) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_PANTRY, null, "id = ?", new String[]{String.valueOf(id)}, null, null, null);

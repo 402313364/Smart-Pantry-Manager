@@ -33,6 +33,11 @@
     <string name="need_label">Need: %1$s</string>
     <string name="ingredients_heading">Ingredients</string>
     <string name="method_heading">Method</string>
+    <string name="cook_this">Cook this</string>
+    <string name="cook_confirm_title">Use these ingredients?</string>
+    <string name="cook_confirm_message">This takes the recipe amounts off your pantry. Items that hit zero are removed.</string>
+    <string name="cook_done">Pantry updated. Those ingredients have been used.</string>
+    <string name="cook_not_enough">You do not have enough for this recipe yet. Add the missing ingredients first.</string>
     <string name="settings">Settings</string>
     <string name="expiry_alerts">Expiry alerts</string>
     <string name="expiry_alerts_help">Turn this on to flag food that expires within 3 days.</string>
